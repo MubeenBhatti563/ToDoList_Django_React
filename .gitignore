@@ -1,0 +1,53 @@
+# ==========================================
+# 1. Global / OS Related
+# ==========================================
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+*.swp
+
+# ==========================================
+# 2. Frontend (React/Vite/Node)
+# ==========================================
+**/node_modules/
+**/dist/
+**/build/
+**/stats.html
+.eslintcache
+.stylelintcache
+
+# ==========================================
+# 3. Backend (Django/Python)
+# ==========================================
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.venv/
+**/venv/
+**/env/
+**/ENV/
+**/db.sqlite3
+**/media/
+**/static_root/
+**/staticfiles/
+**/migrations
+
+# ==========================================
+# 4. Environment Variables & Secrets
+# ==========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/*.pem
+**/*.key
+
+# ==========================================
+# 5. Temporary Files
+# ==========================================
+requirements.txt
+temp/
+tmp/
