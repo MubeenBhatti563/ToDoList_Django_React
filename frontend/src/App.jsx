@@ -7,19 +7,31 @@ import Register from "./components/Register";
 import NotFound from "./components/NotFound";
 import Home from "./pages/Home";
 import NewPost from "./pages/NewPost";
-import PostDel from "./components/PostDel";
+// import PostDel from "./components/PostDel";
 import Edit from "./components/Edit";
+import { useState } from "react";
+import { data } from "./components/data";
 
 function App() {
+  const [informations, setInformations] = useState(data);
+  console.log(data);
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={
+            <Home
+              informations={informations}
+              setInformations={setInformations}
+            />
+          }
+        />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/create-post" element={<NewPost />} />
-        <Route path="/delete-post/:id" element={<PostDel />} />
+        {/* <Route path="/delete-post/:id" element={<PostDel />} /> */}
         <Route path="/edit-post/:id" element={<Edit />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
