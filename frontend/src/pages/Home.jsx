@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { data } from "../components/data";
 
 // 1. Create a sub-component for the Individual Card
-const PostCard = ({ item }) => {
+const PostCard = ({ item, informations, setInformations }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const limit = 70;
+  const deletePost = (id) => {
+    const item = informations.find((i) => i.id === id);
+    const conf = confirm(`Do you reall want to delete this post ${item.title}`);
+    if (conf) {
+      setInformations((information) =>
+        information.filter((item) => item.id !== id),
+      );
+    }
+  };
 
   return (
     <div className="col my-3">
@@ -34,12 +42,13 @@ const PostCard = ({ item }) => {
             >
               Edit
             </Link>
-            <Link
-              to={`/delete-post/${item.id}`}
+            <button
+              // to={`/delete-post/${item.id}`}
               className="btn btn-sm btn-outline-danger px-3"
+              onClick={() => deletePost(item.id)}
             >
               Delete
-            </Link>
+            </button>
           </div>
         </div>
       </div>
@@ -47,17 +56,22 @@ const PostCard = ({ item }) => {
   );
 };
 
-const Home = () => {
+const Home = ({ informations, setInformations }) => {
   return (
     <div className="container mt-4">
-      {data.length === 0 ? (
+      {informations.length === 0 ? (
         <h3 className="mt-5 text-muted text-center italic">
           You don't have any posts yet!
         </h3>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mt-4">
-          {data.map((item) => (
-            <PostCard key={item.id} item={item} />
+          {informations.map((item) => (
+            <PostCard
+              key={item.id}
+              item={item}
+              setInformations={setInformations}
+              informations={informations}
+            />
           ))}
         </div>
       )}
