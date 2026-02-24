@@ -32,7 +32,15 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/create-post" element={<NewPost />} />
         {/* <Route path="/delete-post/:id" element={<PostDel />} /> */}
-        <Route path="/edit-post/:id" element={<Edit />} />
+        <Route
+          path="/edit-post/:id"
+          element={
+            <Edit
+              informations={informations}
+              setInformations={setInformations}
+            />
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
