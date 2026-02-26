@@ -11,10 +11,10 @@ import NewPost from "./pages/NewPost";
 import Edit from "./components/Edit";
 import { useState } from "react";
 import { data } from "./components/data";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const [informations, setInformations] = useState(data);
-  console.log(data);
   return (
     <>
       <Navbar />
@@ -22,10 +22,12 @@ function App() {
         <Route
           path="/"
           element={
-            <Home
-              informations={informations}
-              setInformations={setInformations}
-            />
+            <ProtectedRoute>
+              <Home
+                informations={informations}
+                setInformations={setInformations}
+              />
+            </ProtectedRoute>
           }
         />
         <Route path="/register" element={<Register />} />
