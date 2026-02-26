@@ -1,7 +1,27 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const isLoggin = !!localStorage.getItem("access_token");
+
+  const token = localStorage.getItem("access_token");
+  let username = "Guest";
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      username = decoded.username || "User";
+    } catch (err) {
+      alert(`An error occurred ${err.message}`);
+    }
+  }
+
+  const logout = () => {
+    const check = confirm("Do you want to logout?");
+    if (check) localStorage.clear();
+    navigate("/login");
+  };
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
@@ -32,22 +52,28 @@ const Navbar = () => {
             </li>
             <li className="nav-item">
               <span className="nav-link active bold" aria-current="page">
-                <b>User</b>
+                <b>{username}</b>
               </span>
             </li>
           </ul>
-          <div className="d-flex gap-1">
-            <Link to="/login" className="btn btn-outline-primary">
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="btn btn-primary"
-              aria-label="Search"
-            >
-              Register
-            </Link>
-          </div>
+          {!isLoggin ? (
+            <div className="d-flex gap-1">
+              <Link to="/login" className="btn btn-outline-primary">
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="btn btn-primary"
+                aria-label="Search"
+              >
+                Register
+              </Link>
+            </div>
+          ) : (
+            <button className="btn btn-outline-primary" onClick={logout}>
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </nav>
