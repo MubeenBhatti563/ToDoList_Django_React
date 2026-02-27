@@ -7,17 +7,30 @@ import Register from "./components/Register";
 import NotFound from "./components/NotFound";
 import Home from "./pages/Home";
 import NewPost from "./pages/NewPost";
-// import PostDel from "./components/PostDel";
 import Edit from "./components/Edit";
-import { useState } from "react";
-import { data } from "./components/data";
+import { useEffect, useState } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
+import api from "./api";
 
 function App() {
-  const [informations, setInformations] = useState(data);
+  const [informations, setInformations] = useState([]);
+  // const isLoggedIn = !!localStorage.getItem("access_token");
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+      const res = await api.get("/api/lists/");
+      setInformations(res.data);
+    } catch (err) {
+      console.error("Fetch Error:", err.response?.status, err.message);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <>
-      <Navbar />
+      <Navbar setInformations={setInformations} />
       <Routes>
         <Route
           path="/"
@@ -26,14 +39,17 @@ function App() {
               <Home
                 informations={informations}
                 setInformations={setInformations}
+                fetchData={fetchData}
               />
             </ProtectedRoute>
           }
         />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/create-post" element={<NewPost />} />
-        {/* <Route path="/delete-post/:id" element={<PostDel />} /> */}
+        <Route
+          path="/create-post"
+          element={<NewPost setInformations={setInformations} />}
+        />
         <Route
           path="/edit-post/:id"
           element={
