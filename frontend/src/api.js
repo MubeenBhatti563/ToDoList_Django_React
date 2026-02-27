@@ -1,11 +1,11 @@
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 const api = axios.create({
   baseURL: baseURL,
 });
 
-// REQUEST INTERCEPTERS: attack the token with request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("access_token");
@@ -17,25 +17,30 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// RESPONCE INTERCEPTERS: handling 401 (Expired Token)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // If the error is 401 and we haven't retried yet
     if (
-      error.response &&
-      error.response.status === 401 &&
+      error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url.includes("/api/token/")
     ) {
       originalRequest._retry = true;
       try {
         const refreshToken = localStorage.getItem("refresh_token");
-        const res = await axios.post(baseURL, {
+
+        // FIX: Point to the actual refresh endpoint
+        const res = await axios.post(`${baseURL}/api/token/refresh/`, {
           refresh: refreshToken,
         });
+
         if (res.status === 200) {
           localStorage.setItem("access_token", res.data.access);
+          // Update the header for the original request and retry
+          originalRequest.headers.Authorization = `Bearer ${res.data.access}`;
           return api(originalRequest);
         }
       } catch (err) {
