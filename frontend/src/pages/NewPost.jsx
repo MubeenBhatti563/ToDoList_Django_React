@@ -1,9 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
+import api from "../api";
+import { useNavigate } from "react-router-dom";
 
-const NewPost = () => {
-  const handleSubmit = (e) => {
+const NewPost = ({ setInformations }) => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("working");
+    try {
+      setLoading(true);
+      const res = await api.post("/api/lists/", { title, content });
+      if (res.status === 201) {
+        setInformations((prev) => [res.data, ...prev]);
+        setTitle("");
+        setContent("");
+        navigate("/");
+      }
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <form
@@ -19,6 +38,9 @@ const NewPost = () => {
           className="form-control"
           id="exampleFormControlInput1"
           placeholder="Title"
+          onChange={(e) => setTitle(e.target.value)}
+          value={title}
+          required
         />
       </div>
       <div className="mb-3">
@@ -29,11 +51,14 @@ const NewPost = () => {
           className="form-control"
           id="exampleFormControlTextarea1"
           rows="3"
+          onChange={(e) => setContent(e.target.value)}
+          value={content}
+          required
         ></textarea>
       </div>
       <div className="mb-3">
         <button type="submit" className="btn btn-primary">
-          Create
+          {loading ? "Creating..." : "Create"}
         </button>
       </div>
     </form>
