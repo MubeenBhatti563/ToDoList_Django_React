@@ -1,24 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import api from "../api";
 
 // 1. Create a sub-component for the Individual Card
 const PostCard = ({ item, informations, setInformations }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const limit = 70;
-  const deletePost = (id) => {
+  const deletePost = async (id) => {
     const item = informations.find((i) => i.id === id);
     const conf = confirm(`Do you reall want to delete this post ${item.title}`);
     if (conf) {
-      setInformations((information) =>
-        information.filter((item) => item.id !== id),
-      );
+      try {
+        await api.delete(`/api/lists/${id}`);
+        setInformations((information) =>
+          information.filter((item) => item.id !== id),
+        );
+      } catch (err) {
+        alert(err.message);
+      }
     }
   };
 
   return (
     <div className="col my-3">
       <div className="card h-100 shadow border-0">
-        <div className="card-header bg-light text-muted">{item.date}</div>
+        <div className="card-header bg-light text-muted">
+          {item.created_at.slice(0, 10)}
+        </div>
         <div className="card-body d-flex flex-column">
           <h5 className="card-title fw-bold">{item.title}</h5>
           <div className="card-text text-secondary">
@@ -56,7 +64,10 @@ const PostCard = ({ item, informations, setInformations }) => {
   );
 };
 
-const Home = ({ informations, setInformations }) => {
+const Home = ({ informations, setInformations, fetchData }) => {
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
   return (
     <div className="container mt-4">
       {informations.length === 0 ? (
