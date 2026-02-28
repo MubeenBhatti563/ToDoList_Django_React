@@ -67,7 +67,7 @@ const PostCard = ({ item, informations, setInformations }) => {
 const Home = ({ informations, setInformations, fetchData }) => {
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []);
   return (
     <div className="container mt-4">
       {informations.length === 0 ? (

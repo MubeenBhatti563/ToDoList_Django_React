@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
-const Navbar = ({ setInformations }) => {
+const Navbar = () => {
   const navigate = useNavigate();
   const isLoggin = !!localStorage.getItem("access_token");
 
@@ -21,7 +21,6 @@ const Navbar = ({ setInformations }) => {
     const check = confirm("Do you want to logout?");
     if (check) {
       localStorage.clear();
-      // setInformations([]);
       navigate("/login");
     }
   };
