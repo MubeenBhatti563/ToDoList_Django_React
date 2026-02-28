@@ -1,27 +1,47 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import api from "../api";
 
 const Edit = ({ informations, setInformations }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const item = informations.find((i) => i.id === Number(id));
+  const [title, setTitle] = useState(item ? item.title : "");
   const [content, setContent] = useState(item ? item.content : "");
 
-  const handleUpdate = () => {
-    const updatedList = informations.map((info) =>
-      String(info.id) === String(id) ? { ...info, content: content } : info,
-    );
-
-    setInformations(updatedList);
+  const handleUpdate = async () => {
+    try {
+      const res = await api.put(`/api/lists/${id}`, { title, content });
+      if (res.status === 200) {
+        const updatedList = informations.map((info) =>
+          String(info.id) === String(id)
+            ? { ...info, content: content, title: title }
+            : info,
+        );
+        setInformations(updatedList);
+      }
+    } catch (err) {
+      alert(err.message);
+      return;
+    }
     navigate("/");
   };
   return (
     <div className="container-sm mt-4">
       <div className="col my-3">
         <div className="card h-100 shadow border-0">
-          <div className="card-header bg-light text-muted">{item.date}</div>
+          <div className="card-header bg-light text-muted">
+            {item.created_at}
+          </div>
           <div className="card-body d-flex flex-column">
-            <h5 className="card-title fw-bold">{item.title}</h5>
+            <div className="mb-3">
+              <input
+                className="form-control"
+                id="exampleFormControlInput1"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
             <div className="mb-3">
               <textarea
                 className="form-control"
