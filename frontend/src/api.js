@@ -3,7 +3,7 @@ import axios from "axios";
 const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 const api = axios.create({
-  baseURL: baseURL,
+  baseURL,
 });
 
 api.interceptors.request.use(
@@ -21,34 +21,41 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
-    // If the error is 401 and we haven't retried yet
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url.includes("/api/token/")
     ) {
       originalRequest._retry = true;
-      try {
-        const refreshToken = localStorage.getItem("refresh_token");
 
-        // FIX: Point to the actual refresh endpoint
+      const refreshToken = localStorage.getItem("refresh_token");
+
+      if (!refreshToken) {
+        localStorage.clear();
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
+
+      try {
         const res = await axios.post(`${baseURL}/api/token/refresh/`, {
           refresh: refreshToken,
         });
 
-        if (res.status === 200) {
+        if (res.data.access || res.data.refresh) {
           localStorage.setItem("access_token", res.data.access);
-          // Update the header for the original request and retry
-          originalRequest.headers.Authorization = `Bearer ${res.data.access}`;
-          return api(originalRequest);
+          localStorage.setItem("refresh_token", res.data.refresh);
         }
+
+        originalRequest.headers.Authorization = `Bearer ${res.data.access}`;
+
+        return api(originalRequest);
       } catch (err) {
         localStorage.clear();
         window.location.href = "/login";
         return Promise.reject(err);
       }
     }
+
     return Promise.reject(error);
   },
 );
