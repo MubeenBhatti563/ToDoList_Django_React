@@ -1,9 +1,10 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import useLists from "./useLists";
 
 const Navbar = () => {
-  const navigate = useNavigate();
+  const { logout } = useLists();
   const isLoggin = !!localStorage.getItem("access_token");
 
   const token = localStorage.getItem("access_token");
@@ -17,13 +18,6 @@ const Navbar = () => {
     }
   }
 
-  const logout = () => {
-    const check = confirm("Do you want to logout?");
-    if (check) {
-      localStorage.clear();
-      navigate("/login");
-    }
-  };
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
