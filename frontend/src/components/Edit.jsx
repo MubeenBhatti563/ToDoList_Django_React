@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "../api";
+import useLists from "./useLists";
 
-const Edit = ({ informations, setInformations }) => {
+const Edit = () => {
+  const { informations, dispatch } = useLists();
   const { id } = useParams();
   const navigate = useNavigate();
   const item = informations.find((i) => i.id === Number(id));
@@ -18,7 +20,7 @@ const Edit = ({ informations, setInformations }) => {
             ? { ...info, content: content, title: title }
             : info,
         );
-        setInformations(updatedList);
+        dispatch({ type: "lists", payload: updatedList });
       }
     } catch (err) {
       alert(err.message);
