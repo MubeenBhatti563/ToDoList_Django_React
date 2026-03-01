@@ -1,26 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import api from "../api";
+import useLists from "../components/useLists";
 
 // 1. Create a sub-component for the Individual Card
-const PostCard = ({ item, informations, setInformations }) => {
+const PostCard = ({ item }) => {
+  const { deletePost } = useLists();
   const [isExpanded, setIsExpanded] = useState(false);
   const limit = 70;
-  const deletePost = async (id) => {
-    const item = informations.find((i) => i.id === id);
-    const conf = confirm(`Do you reall want to delete this post ${item.title}`);
-    if (conf) {
-      try {
-        await api.delete(`/api/lists/${id}`);
-        setInformations((information) =>
-          information.filter((item) => item.id !== id),
-        );
-      } catch (err) {
-        alert(err.message);
-      }
-    }
-  };
-
   return (
     <div className="col my-3">
       <div className="card h-100 shadow border-0">
@@ -51,7 +37,6 @@ const PostCard = ({ item, informations, setInformations }) => {
               Edit
             </Link>
             <button
-              // to={`/delete-post/${item.id}`}
               className="btn btn-sm btn-outline-danger px-3"
               onClick={() => deletePost(item.id)}
             >
@@ -64,7 +49,8 @@ const PostCard = ({ item, informations, setInformations }) => {
   );
 };
 
-const Home = ({ informations, setInformations, fetchData }) => {
+const Home = () => {
+  const { fetchData, informations } = useLists();
   useEffect(() => {
     fetchData();
   }, []);
@@ -77,12 +63,7 @@ const Home = ({ informations, setInformations, fetchData }) => {
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mt-4">
           {informations.map((item) => (
-            <PostCard
-              key={item.id}
-              item={item}
-              setInformations={setInformations}
-              informations={informations}
-            />
+            <PostCard key={item.id} item={item} />
           ))}
         </div>
       )}

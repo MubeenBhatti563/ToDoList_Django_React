@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
+import useLists from "../components/useLists";
 
-const NewPost = ({ setInformations }) => {
+const NewPost = () => {
+  const { dispatch, informations } = useLists();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,7 +15,7 @@ const NewPost = ({ setInformations }) => {
       setLoading(true);
       const res = await api.post("/api/lists/", { title, content });
       if (res.status === 201) {
-        setInformations((prev) => [res.data, ...prev]);
+        dispatch({ type: "lists", payload: [...informations, res.data] });
         setTitle("");
         setContent("");
         navigate("/");
