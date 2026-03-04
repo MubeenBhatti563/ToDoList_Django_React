@@ -29,19 +29,27 @@ const PostCard = ({ item }) => {
               {isExpanded ? "Show less" : "Read more"}
             </span>
           </div>
-          <div className="d-flex justify-content-between mt-auto pt-3">
-            <Link
-              to={`/edit-post/${item.id}`}
-              className="btn btn-sm btn-outline-primary px-3"
-            >
-              Edit
-            </Link>
-            <button
-              className="btn btn-sm btn-outline-danger px-3"
-              onClick={() => deletePost(item.id)}
-            >
-              Delete
-            </button>
+          <div className="mt-auto w-100">
+            <div className="d-flex justify-content-between mt-auto pt-3">
+              <Link
+                to={`/edit-post/${item.id}`}
+                className="btn btn-sm btn-outline-primary px-3"
+              >
+                Edit
+              </Link>
+              <button
+                className="btn btn-sm btn-outline-danger px-3"
+                onClick={() => deletePost(item.id)}
+              >
+                Delete
+              </button>
+            </div>
+            <div className="d-flex justify-content-between mt-auto pt-3">
+              <span className="btn btn-sm bg-outline-dark px-3">Like</span>
+              <button className="btn btn-sm btn-outline-warning px-3">
+                Comment
+              </button>
+            </div>
           </div>
         </div>
       </div>
