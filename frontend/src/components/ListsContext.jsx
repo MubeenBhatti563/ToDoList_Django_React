@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from "react";
+import React, { createContext, useReducer, useState } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
 
@@ -26,6 +26,7 @@ const reducer = (state, action) => {
 };
 const ListsContext = ({ children }) => {
   const [{ informations }, dispatch] = useReducer(reducer, initialState);
+  const [isComment, setIsComment] = useState(false);
   const navigate = useNavigate();
   const fetchData = async () => {
     try {
@@ -42,7 +43,7 @@ const ListsContext = ({ children }) => {
     const conf = confirm(`Do you reall want to delete this post ${item.title}`);
     if (conf) {
       try {
-        await api.delete(`/api/lists/${id}`);
+        await api.delete(`/api/lists/${id}/`);
         dispatch({
           type: "lists",
           payload: informations.filter((item) => item.id !== id),
@@ -68,6 +69,8 @@ const ListsContext = ({ children }) => {
         deletePost: deletePost,
         fetchData: fetchData,
         logout: logout,
+        isComment,
+        setIsComment,
       }}
     >
       {children}
