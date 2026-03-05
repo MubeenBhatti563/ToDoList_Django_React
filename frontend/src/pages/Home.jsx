@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useLists from "../components/useLists";
+import Comments from "../components/Comments";
 
 // 1. Create a sub-component for the Individual Card
+const LIMIT = 70;
 const PostCard = ({ item }) => {
-  const { deletePost } = useLists();
+  const { deletePost, isComment, setIsComment } = useLists();
   const [isExpanded, setIsExpanded] = useState(false);
-  const limit = 70;
+  const handleComment = async (id) => {
+    console.log("test comment", id);
+  };
   return (
     <div className="col my-3">
+      {isComment && <Comments />}
       <div className="card h-100 shadow border-0">
         <div className="card-header bg-light text-muted">
           {item.created_at.slice(0, 10)}
@@ -19,7 +24,7 @@ const PostCard = ({ item }) => {
             <div
               className={`transition-wrapper ${isExpanded ? "open" : "collapsed"}`}
             >
-              {isExpanded ? item.content : `${item.content.slice(0, limit)}...`}
+              {isExpanded ? item.content : `${item.content.slice(0, LIMIT)}...`}
             </div>
             <span
               className="btn btn-link p-0 ms-1 text-decoration-none fw-bold"
@@ -45,8 +50,14 @@ const PostCard = ({ item }) => {
               </button>
             </div>
             <div className="d-flex justify-content-between mt-auto pt-3">
-              <span className="btn btn-sm bg-outline-dark px-3">Like</span>
-              <button className="btn btn-sm btn-outline-warning px-3">
+              <span className="btn btn-sm text-dark px-3">Like</span>
+              <button
+                className="btn btn-sm text-dark px-3"
+                onClick={() => {
+                  handleComment(item.id);
+                  setIsComment(true);
+                }}
+              >
                 Comment
               </button>
             </div>
