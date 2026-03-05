@@ -9,6 +9,7 @@ import NewPost from "./pages/NewPost";
 import Edit from "./components/Edit";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ListsContext from "./components/ListsContext";
+import Comments from "./components/Comments";
 
 function App() {
   return (
