@@ -61,6 +61,14 @@ const ListsContext = ({ children }) => {
       navigate("/login");
     }
   };
+  const handleLike = async (postId) => {
+    try {
+      await api.post(`/api/likes/`, { post: postId });
+      fetchData();
+    } catch (err) {
+      console.error("Error toggling like", err.message);
+    }
+  };
   return (
     <ListProvider.Provider
       value={{
@@ -71,6 +79,7 @@ const ListsContext = ({ children }) => {
         logout: logout,
         isComment,
         setIsComment,
+        handleLike,
       }}
     >
       {children}
