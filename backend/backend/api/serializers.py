@@ -3,16 +3,32 @@ from .models import TodoList, Comment, Like
 from django.contrib.auth.models import User
 
 class TodoSerializer(serializers.ModelSerializer):
-    """
-    Todo List serializer for Lists items
-    """
     username = serializers.ReadOnlyField(source="user.username")
-    likes_count = serializers.IntegerField(source="post_like.count", read_only=True)
+    like_count = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
+    # Note: source="post_comment.count" works if you want the count directly
     comments_count = serializers.IntegerField(source="post_comment.count", read_only=True)
+
     class Meta:
         model = TodoList
-        fields = ["id", "title", "content", "username", "user", "likes_count", "comments_count", "created_at"]
+        # Added 'username' and 'comments_count' here:
+        fields = [
+            'id', 'title', 'content', 'created_at', 
+            'user', 'username', 'like_count', 
+            'is_liked', 'comments_count'
+        ]
         read_only_fields = ['user']
+
+    def get_like_count(self, obj):
+        # Counts all Like objects related to this post
+        return obj.post_like.count()
+
+    def get_is_liked(self, obj):
+        # Checks if the CURRENT user has a Like object for this post
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return obj.post_like.filter(user=user).exists()
+        return False
 
 class UserCreateSerializer(serializers.ModelSerializer):
     """
