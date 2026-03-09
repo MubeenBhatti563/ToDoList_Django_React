@@ -41,11 +41,10 @@ api.interceptors.response.use(
           refresh: refreshToken,
         });
 
-        if (res.data.access || res.data.refresh) {
-          localStorage.setItem("access_token", res.data.access);
+        localStorage.setItem("access_token", res.data.access);
+        if (res.data.refresh) {
           localStorage.setItem("refresh_token", res.data.refresh);
         }
-
         originalRequest.headers.Authorization = `Bearer ${res.data.access}`;
 
         return api(originalRequest);
