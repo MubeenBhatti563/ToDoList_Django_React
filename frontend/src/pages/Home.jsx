@@ -6,10 +6,17 @@ import Comments from "../components/Comments";
 // 1. Create a sub-component for the Individual Card
 const LIMIT = 70;
 const PostCard = ({ item }) => {
-  const { deletePost, isComment, setIsComment } = useLists();
+  const { deletePost, isComment, setIsComment, handleLike } = useLists();
   const [isExpanded, setIsExpanded] = useState(false);
-  const handleComment = async (id) => {
-    console.log("test comment", id);
+  const [localIsLiked, setLocalIsLiked] = useState(item.is_liked);
+  const [localLikeCount, setLocalLikeCount] = useState(item.like_count);
+
+  const onLikeToggle = async () => {
+    // Optimistic Update
+    setLocalIsLiked(!localIsLiked);
+    setLocalLikeCount(localIsLiked ? localLikeCount - 1 : localLikeCount + 1);
+
+    await handleLike(item.id);
   };
   return (
     <div className="col my-3">
@@ -50,11 +57,15 @@ const PostCard = ({ item }) => {
               </button>
             </div>
             <div className="d-flex justify-content-between mt-auto pt-3">
-              <span className="btn btn-sm text-dark px-3">Like</span>
+              <button
+                className={`btn btn-sm ${localIsLiked ? "btn-primary" : "btn-outline-secondary"}`}
+                onClick={onLikeToggle}
+              >
+                {localIsLiked ? "❤️ Liked" : "🤍 Like"} ({localLikeCount})
+              </button>
               <button
                 className="btn btn-sm text-dark px-3"
                 onClick={() => {
-                  handleComment(item.id);
                   setIsComment(true);
                 }}
               >
