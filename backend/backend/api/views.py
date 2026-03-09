@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import TodoList, Comment, Like
 from django.contrib.auth.models import User
 from .serializers import TodoSerializer, UserCreateSerializer, CommentSerializer, LikeSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -61,28 +61,22 @@ class CommentView(ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-class LikeView(ListCreateAPIView, DestroyAPIView):
+class LikeView(ListCreateAPIView):
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
-        # Corrected 'query_params'
-        post_id = self.request.query_params.get("post")
-        if post_id is not None:
-            return Like.objects.filter(post_id=post_id)
-        return Like.objects.all()
+    def create(self, request, *args, **kwargs):
+        post_id = request.data.get('post')
+        # Check if this user already liked this post
+        existing_like = Like.objects.filter(user=request.user, post_id=post_id)
+        
+        if existing_like.exists():
+            # If it exists, UNLIKE it (Delete)
+            existing_like.delete()
+            return Response({"detail": "Unliked"}, status=status.HTTP_204_NO_CONTENT)
+        
+        # If it doesn't exist, LIKE it (Create)
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-    def delete(self, request, *args, **kwargs):
-        """
-        Custom delete to allow un-liking by Post ID instead of Like ID
-        """
-        post_id = request.data.get('post')
-        like = Like.objects.filter(user=request.user, post_id=post_id)
-        
-        if like.exists():
-            like.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({"error": "Like not found"}, status=status.HTTP_404_NOT_FOUND)
